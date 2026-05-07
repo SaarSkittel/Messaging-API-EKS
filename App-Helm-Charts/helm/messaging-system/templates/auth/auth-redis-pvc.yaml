@@ -1,0 +1,19 @@
+{{- if .Values.deployInternalAuthRedis }}
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: authentication-redis-pvc
+  labels:
+    app: redis
+  namespace: {{ .Values.authNamespace }}
+spec:
+  storageClassName: standard
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 10Gi
+  selector:
+    matchLabels:
+      app: redis
+{{- end }}

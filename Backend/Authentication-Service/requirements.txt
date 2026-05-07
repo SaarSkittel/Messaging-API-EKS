@@ -1,0 +1,13 @@
+django>=4.0.0,<4.1.0
+djangorestframework
+django-cors-headers
+djangorestframework-simplejwt
+django-environ
+django-debug-toolbar
+celery
+redis
+flower
+psycopg2
+gunicorn==20.1.0
+grpcio 
+grpcio-tools

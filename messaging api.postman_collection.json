@@ -1,0 +1,183 @@
+{
+	"variables": [],
+	"info": {
+		"name": "messaging api",
+		"_postman_id": "50b944a1-091b-a06c-1732-a134f3549dcf",
+		"description": "",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "auth",
+			"request": {
+				"url": "localhost:8000/api/auth",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"username\":\"john\",\n\t\"password\":\"johnpassword\"\n}"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "register",
+			"request": {
+				"url": "localhost:8000/api/register",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					},
+					{
+						"key": "",
+						"value": "",
+						"description": "",
+						"disabled": true
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"username\":\"Saar12\",\n\t\"email\":\"test@gmail.com\",\n\t\"password\":\"Aa123123\"\n\t\n}"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "write",
+			"request": {
+				"url": "http://localhost:8000/api/write",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					},
+					{
+						"key": "Authorization",
+						"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNjU2MzE1NjI2LCJpYXQiOjE2NTYzMTUzMjYsImp0aSI6IjUwMTY1NjEyY2M4YTRjOTA4N2UwZDk4ZDdhNDg1ZDI0IiwidXNlcl9pZCI6Mn0.Xz0g3w9xuYOxK40bMFhVJK5YuYajV4J1kLpBCJdKHKY",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"receiver\" : \"3\",\n\t\"subject\" : \"hello\",\n\t\"message\" : \"hello world\",\n\t\"creation date\" : \"2022-04-27\"\n}"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "get all",
+			"request": {
+				"url": {
+					"raw": "http://localhost:8000/api/get_all/?id=2",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"get_all",
+						""
+					],
+					"query": [
+						{
+							"key": "id",
+							"value": "2",
+							"equals": true,
+							"description": ""
+						}
+					],
+					"variable": []
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNjU2MzM5Njc1LCJpYXQiOjE2NTYzMzkzNzUsImp0aSI6Ijk4NTM1NmI5MjUxNjQ0MjBhYjE4YTA0MjJkMGYwNTVmIiwidXNlcl9pZCI6M30.CDC0jAv8-BiO492kfSDmUhppe5Ezfiucmvk4Shv5miw",
+						"description": ""
+					}
+				],
+				"body": {},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "get unread",
+			"request": {
+				"url": {
+					"raw": "http://localhost:8000/api/get_all_unread/?id=2",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"get_all_unread",
+						""
+					],
+					"query": [
+						{
+							"key": "id",
+							"value": "2",
+							"equals": true,
+							"description": ""
+						}
+					],
+					"variable": []
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNjU2MzM5Njc1LCJpYXQiOjE2NTYzMzkzNzUsImp0aSI6Ijk4NTM1NmI5MjUxNjQ0MjBhYjE4YTA0MjJkMGYwNTVmIiwidXNlcl9pZCI6M30.CDC0jAv8-BiO492kfSDmUhppe5Ezfiucmvk4Shv5miw",
+						"description": ""
+					}
+				],
+				"body": {},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "delete message",
+			"request": {
+				"url": "localhost:8000/api/delete_message",
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNjU2MzM5Njc1LCJpYXQiOjE2NTYzMzkzNzUsImp0aSI6Ijk4NTM1NmI5MjUxNjQ0MjBhYjE4YTA0MjJkMGYwNTVmIiwidXNlcl9pZCI6M30.CDC0jAv8-BiO492kfSDmUhppe5Ezfiucmvk4Shv5miw",
+						"description": ""
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"user_conversation\": 2,\n\t\"sort\":2\n}"
+				},
+				"description": ""
+			},
+			"response": []
+		}
+	]
+}

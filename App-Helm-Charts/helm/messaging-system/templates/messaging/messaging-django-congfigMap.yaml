@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: django-config
+  namespace: {{ .Values.messagingNamespace }}
+data:
+  postgres-host: "{{ .Values.messagingPostgresHost }}"
+  postgres-port: "{{ .Values.messagingPostgresPort }}"
+  redis-host: "{{ .Values.messagingRedisHost }}"
+  redis-port: "{{ .Values.messagingRedisPort }}"

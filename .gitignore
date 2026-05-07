@@ -1,0 +1,6 @@
+Backend/server/.env
+.terraform/
+**/.terraform/
+.DS_Store
+*.tfstate
+*.tfstate.backup

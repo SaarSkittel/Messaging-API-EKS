@@ -1,0 +1,17 @@
+{{- if .Values.deployInternalMessagingRedis }}
+kind: PersistentVolume
+apiVersion: v1
+metadata:
+  name: messaging-redis-pv
+  labels:
+    type: local
+    app: redis
+spec:
+  storageClassName: standard
+  capacity:
+    storage: 10Gi
+  accessModes:
+    - ReadWriteMany
+  hostPath:
+    path: /messaging/redis
+{{- end }}

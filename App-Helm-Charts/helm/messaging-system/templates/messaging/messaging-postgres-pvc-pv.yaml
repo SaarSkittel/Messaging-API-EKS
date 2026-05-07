@@ -1,0 +1,35 @@
+{{- if .Values.deployInternalMessagingPostgres }}
+kind: PersistentVolume
+apiVersion: v1
+metadata:
+  name: messaging-postgers-pv
+  labels:
+    type: local
+    app: postgres
+spec:
+  storageClassName: standard
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteMany
+  hostPath:
+    path: /messaging/postgers
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: messaging-postgres-pvc
+  labels:
+    app: postgres
+  namespace: {{ .Values.messagingNamespace }}
+spec:
+  storageClassName: standard
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 1Gi
+  selector:
+    matchLabels:
+      app: postgres
+{{- end }}

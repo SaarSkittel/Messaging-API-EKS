@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: django-config
+  namespace: {{ .Values.authNamespace }}
+data:
+  postgres-host: "{{ .Values.authPostgresHost }}"
+  postgres-port: "{{ .Values.authPostgresPort }}"
+  redis-host: "{{ .Values.authRedisHost }}"
+  redis-port: "{{ .Values.authRedisPort }}"

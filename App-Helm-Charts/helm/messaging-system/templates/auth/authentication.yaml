@@ -1,0 +1,110 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: {{ .Values.authNamespace }}
+  name: authentication
+  labels:
+    app: authentication
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: authentication
+  template:
+    metadata:
+      labels:
+        app: authentication
+    spec:
+      {{- if .Values.useSecretsManager }}
+      serviceAccountName: {{ .Values.authServiceAccountName }}
+      {{- end }}
+      containers:
+        - name: authentication
+          image: {{ .Values.authImage | quote }}
+          command: ["/bin/sh", "-c"]
+          args:
+            - |
+              {{- if .Values.useSecretsManager }}
+              export POSTGRES_USERNAME="$(cat /mnt/secrets-store/postgres-username)"
+              export POSTGRES_PASSWORD="$(cat /mnt/secrets-store/postgres-password)"
+              export ACCESS_TOKEN="$(cat /mnt/secrets-store/access-token)"
+              {{- end }}
+              if [ "{{ .Values.useRedisTls }}" = "true" ]; then
+                export CELERY_BROKER="rediss://${REDIS_HOST}:${REDIS_PORT}/0?ssl_cert_reqs=required"
+                export CELERY_BACKEND="${CELERY_BROKER}"
+              else
+                export CELERY_BROKER="redis://${REDIS_HOST}:${REDIS_PORT}/0"
+                export CELERY_BACKEND="${CELERY_BROKER}"
+              fi
+              python manage.py makemigrations && python manage.py makemigrations api && python manage.py migrate && gunicorn server.wsgi:application -b 0.0.0.0:8001
+          ports:
+            - containerPort: 8001
+            - containerPort: 50051
+          env:
+            {{- if not .Values.useSecretsManager }}
+            - name: POSTGRES_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: django-secret
+                  key: postgres-username
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: django-secret
+                  key: postgres-password
+            - name: ACCESS_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: django-secret
+                  key: access_token
+            {{- end }}
+            - name: POSTGRES_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: django-config
+                  key: postgres-host
+            - name: POSTGRES_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: django-config
+                  key: postgres-port
+            - name: REDIS_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: django-config
+                  key: redis-host
+            - name: REDIS_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: django-config
+                  key: redis-port
+          {{- if .Values.useSecretsManager }}
+          volumeMounts:
+            - name: secrets-store
+              mountPath: /mnt/secrets-store
+              readOnly: true
+      volumes:
+        - name: secrets-store
+          csi:
+            driver: secrets-store.csi.k8s.io
+            readOnly: true
+            volumeAttributes:
+              secretProviderClass: {{ .Values.authSecretProviderClassName }}
+      {{- end }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: authentication-service
+  namespace: {{ .Values.authNamespace }}
+spec:
+  type: NodePort
+  selector:
+    app: authentication
+  ports:
+    - name: http
+      port: 8001
+      targetPort: 8001
+    - name: grpc
+      port: 50051
+      targetPort: 50051

@@ -1,0 +1,35 @@
+{{- if .Values.deployInternalAuthPostgres }}
+kind: PersistentVolume
+apiVersion: v1
+metadata:
+  name: authentication-postgers-pv
+  labels:
+    type: local
+    app: postgres
+spec:
+  storageClassName: standard
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteMany
+  hostPath:
+    path: /auth/postgers
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: auth-postgres-pvc
+  labels:
+    app: postgres
+  namespace: {{ .Values.authNamespace }}
+spec:
+  storageClassName: standard
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 1Gi
+  selector:
+    matchLabels:
+      app: postgres
+{{- end }}

@@ -1,0 +1,102 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: auth-celery
+  namespace: {{ .Values.authNamespace }}
+  labels:
+    app: auth-celery
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: auth-celery
+  template:
+    metadata:
+      labels:
+        app: auth-celery
+    spec:
+      {{- if .Values.useSecretsManager }}
+      serviceAccountName: {{ .Values.authServiceAccountName }}
+      {{- end }}
+      containers:
+        - name: auth-celery
+          image: {{ .Values.authImage | quote }}
+          command: ["/bin/sh", "-c"]
+          args:
+            - |
+              {{- if .Values.useSecretsManager }}
+              export POSTGRES_USERNAME="$(cat /mnt/secrets-store/postgres-username)"
+              export POSTGRES_PASSWORD="$(cat /mnt/secrets-store/postgres-password)"
+              export ACCESS_TOKEN="$(cat /mnt/secrets-store/access-token)"
+              {{- end }}
+              if [ "{{ .Values.useRedisTls }}" = "true" ]; then
+                export CELERY_BROKER="rediss://${REDIS_HOST}:${REDIS_PORT}/0?ssl_cert_reqs=required"
+                export CELERY_BACKEND="${CELERY_BROKER}"
+              else
+                export CELERY_BROKER="redis://${REDIS_HOST}:${REDIS_PORT}/0"
+                export CELERY_BACKEND="${CELERY_BROKER}"
+              fi
+              celery -A server.celery worker -l INFO
+          env:
+            {{- if not .Values.useSecretsManager }}
+            - name: POSTGRES_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: django-secret
+                  key: postgres-username
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: django-secret
+                  key: postgres-password
+            - name: ACCESS_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: django-secret
+                  key: access_token
+            {{- end }}
+            - name: POSTGRES_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: django-config
+                  key: postgres-port
+            - name: POSTGRES_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: django-config
+                  key: postgres-host
+            - name: REDIS_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: django-config
+                  key: redis-host
+            - name: REDIS_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: django-config
+                  key: redis-port
+          {{- if .Values.useSecretsManager }}
+          volumeMounts:
+            - name: secrets-store
+              mountPath: /mnt/secrets-store
+              readOnly: true
+      volumes:
+        - name: secrets-store
+          csi:
+            driver: secrets-store.csi.k8s.io
+            readOnly: true
+            volumeAttributes:
+              secretProviderClass: {{ .Values.authSecretProviderClassName }}
+      {{- end }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: authentication-celery-service
+  namespace: {{ .Values.authNamespace }}
+spec:
+  selector:
+    app: auth-celery
+  ports:
+    - name: celery
+      port: 8001

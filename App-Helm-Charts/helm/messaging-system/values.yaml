@@ -1,0 +1,67 @@
+# Default host name routed by the shared ALB.
+domainName: saarskittel.com
+# Default ingress class name created by Terraform for EKS Auto Mode.
+ingressClassName: alb
+
+# Namespace used by the authentication service objects.
+authNamespace: authentication
+# Namespace used by the messaging service objects.
+messagingNamespace: messaging
+# Service account used by authentication workloads when Secrets Manager integration is enabled.
+authServiceAccountName: auth-workload
+# Service account used by messaging workloads when Secrets Manager integration is enabled.
+messagingServiceAccountName: messaging-workload
+# SecretProviderClass used by authentication workloads when Secrets Manager integration is enabled.
+authSecretProviderClassName: auth-aws-secrets
+# SecretProviderClass used by messaging workloads when Secrets Manager integration is enabled.
+messagingSecretProviderClassName: messaging-aws-secrets
+
+# Container image used by the authentication deployment and worker.
+authImage: saarskittel/authentication-k8s
+# Container image used by the messaging deployment and worker.
+messagingImage: saarskittel/messaging-k8s
+
+# Toggle for reading runtime secrets from AWS Secrets Manager through the CSI provider.
+useSecretsManager: false
+# Shared Secrets Manager ARN that stores a JSON field named access_token.
+accessTokenSecretArn: ""
+# RDS-managed Secrets Manager ARN for the authentication database credentials.
+authDatabaseSecretArn: ""
+# RDS-managed Secrets Manager ARN for the messaging database credentials.
+messagingDatabaseSecretArn: ""
+# Toggle for building rediss:// Redis URLs instead of plain redis:// URLs.
+useRedisTls: false
+
+# Shared database username injected into both Django services.
+dbUsername: postgres
+# Shared database password injected into both Django services.
+dbPassword: adminpassword
+# Shared JWT signing secret injected into both Django services.
+accessToken: replace-me
+
+# Host name used by the authentication service to reach PostgreSQL.
+authPostgresHost: postgres-service
+# Port used by the authentication service to reach PostgreSQL.
+authPostgresPort: 5432
+# Host name used by the messaging service to reach PostgreSQL.
+messagingPostgresHost: postgres-service
+# Port used by the messaging service to reach PostgreSQL.
+messagingPostgresPort: 5432
+
+# Host name used by the authentication service to reach Redis.
+authRedisHost: redis-service
+# Port used by the authentication service to reach Redis.
+authRedisPort: 6379
+# Host name used by the messaging service to reach Redis.
+messagingRedisHost: redis-service
+# Port used by the messaging service to reach Redis.
+messagingRedisPort: 6379
+
+# Toggle for running a local in-cluster PostgreSQL for the authentication namespace.
+deployInternalAuthPostgres: true
+# Toggle for running a local in-cluster Redis for the authentication namespace.
+deployInternalAuthRedis: true
+# Toggle for running a local in-cluster PostgreSQL for the messaging namespace.
+deployInternalMessagingPostgres: true
+# Toggle for running a local in-cluster Redis for the messaging namespace.
+deployInternalMessagingRedis: true
