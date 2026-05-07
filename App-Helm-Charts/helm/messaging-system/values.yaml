@@ -2,6 +2,13 @@
 domainName: saarskittel.com
 # Default ingress class name created by Terraform for EKS Auto Mode.
 ingressClassName: alb
+# Default ALB annotations used by the app ingress resources.
+ingressAnnotations:
+  # Route ALB traffic directly to pod IPs so the backing services can stay ClusterIP.
+  alb.ingress.kubernetes.io/target-type: ip
+
+# Service type used by the application services.
+serviceType: ClusterIP
 
 # Namespace used by the authentication service objects.
 authNamespace: authentication

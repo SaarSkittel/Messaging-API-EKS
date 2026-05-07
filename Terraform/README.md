@@ -20,10 +20,10 @@ Internet
   v
 Application Load Balancer
   |
-  +--> /auth --> authentication-service (NodePort) --> Authentication Django pod
+  +--> /auth --> authentication-service (ClusterIP, ALB IP targets) --> Authentication Django pod
   |                                                 --> auth-celery worker
   |
-  +--> /api  --> messaging-service (NodePort)      --> Messaging Django pod
+  +--> /api  --> messaging-service (ClusterIP, ALB IP targets)      --> Messaging Django pod
                                                     --> messaging-celery worker
 
 Authentication Django pod --> AWS Secrets Manager (JWT + auth DB password)
@@ -123,7 +123,7 @@ Other chart fixes included:
 
 - Namespace manifests no longer include a `status` field.
 - App secrets fall back to `stringData` only when Secrets Manager mode is disabled.
-- App services now use `NodePort`, which fits the EKS Auto Mode ALB flow better.
+- App services now use `ClusterIP`, and the ALB ingress targets pod IPs directly through `alb.ingress.kubernetes.io/target-type: ip`.
 - The ingress resources now rely on the `alb` ingress class instead of old ALB annotations for core setup.
 - In Secrets Manager mode, the pods mount AWS secrets through the CSI driver instead of reading DB credentials from Kubernetes `Secret`s.
 

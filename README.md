@@ -1,4 +1,9 @@
 # Messaging-API
+
+## Architecture
+
+![Messaging API on Amazon EKS architecture](docs/images/messaging-api-eks-architecture.png)
+
 ## Introduction
 A fully scalable RESTful messaging api that runs on Docker written in Python using Django and Django Rest Framework with Celery for asynchronous tasking, Reddis message broker and Postgres for a DB. 
 
@@ -51,6 +56,5 @@ The refresh token is also given when the user logs in and it is stored in the co
 • Register- Signs a new user to the system.
 
 • Token- Refresh a new access token.
-
 
 

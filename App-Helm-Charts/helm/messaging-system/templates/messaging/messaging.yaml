@@ -99,7 +99,7 @@ metadata:
   name: messaging-service
   namespace: {{ .Values.messagingNamespace }}
 spec:
-  type: NodePort
+  type: {{ .Values.serviceType }}
   selector:
     app: messaging
   ports:

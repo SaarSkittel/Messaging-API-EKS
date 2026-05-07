@@ -98,7 +98,7 @@ metadata:
   name: authentication-service
   namespace: {{ .Values.authNamespace }}
 spec:
-  type: NodePort
+  type: {{ .Values.serviceType }}
   selector:
     app: authentication
   ports:

@@ -3,6 +3,10 @@ kind: Ingress
 metadata:
   name: messaging-ingress
   namespace: {{ .Values.messagingNamespace }}
+  {{- with .Values.ingressAnnotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
 spec:
   ingressClassName: {{ .Values.ingressClassName }}
   rules:
@@ -22,6 +26,10 @@ kind: Ingress
 metadata:
   name: auth-ingress
   namespace: {{ .Values.authNamespace }}
+  {{- with .Values.ingressAnnotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
 spec:
   ingressClassName: {{ .Values.ingressClassName }}
   rules:
