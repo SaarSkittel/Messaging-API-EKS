@@ -28,14 +28,14 @@ variable "existing_access_token_secret_arn" {
   default = ""
 }
 
-# Accept the DNS host name that the ALB ingress rules should match.
+# Accept an optional DNS host name that the ALB ingress rules should match.
 variable "domain_name" {
   # Explain what the variable controls when Terraform prompts for input.
-  description = "Public host name routed by the ALB ingress."
+  description = "Optional public host name routed by the ALB ingress. Leave empty to match all hosts and use the ALB DNS name directly."
   # Enforce that the value is plain text.
   type = string
-  # Preserve the hostname already hardcoded in the chart before the rewrite.
-  default = "saarskittel.com"
+  # Default to empty so test environments can use the AWS-provided ALB DNS name without owning a domain.
+  default = ""
 }
 
 # Accept the scheme for the ALB so the same stack can build a public or internal ingress entry point.
@@ -86,6 +86,16 @@ variable "release_name" {
   type = string
   # Default to the existing chart name for familiarity.
   default = "messaging-system"
+}
+
+# Allow the Kubernetes manifests and Helm release to be applied only after the EKS API is reachable.
+variable "deploy_in_cluster_resources" {
+  # Explain what the variable controls when Terraform prompts for input.
+  description = "Whether to apply Kubernetes manifests and the Helm release after the EKS cluster is available."
+  # Enforce that the value is boolean.
+  type = bool
+  # Default to false so a brand-new environment can be bootstrapped in two stages without provider errors.
+  default = false
 }
 
 # Accept the authentication service image so the app can be upgraded without editing the chart.

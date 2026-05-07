@@ -10,8 +10,7 @@ metadata:
 spec:
   ingressClassName: {{ .Values.ingressClassName }}
   rules:
-    - host: {{ .Values.domainName | quote }}
-      http:
+    - http:
         paths:
           - path: /api
             pathType: Prefix
@@ -20,6 +19,9 @@ spec:
                 name: messaging-service
                 port:
                   number: 8000
+      {{- if .Values.domainName }}
+      host: {{ .Values.domainName | quote }}
+      {{- end }}
 ---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
@@ -33,8 +35,7 @@ metadata:
 spec:
   ingressClassName: {{ .Values.ingressClassName }}
   rules:
-    - host: {{ .Values.domainName | quote }}
-      http:
+    - http:
         paths:
           - path: /auth
             pathType: Prefix
@@ -43,3 +44,6 @@ spec:
                 name: authentication-service
                 port:
                   number: 8001
+      {{- if .Values.domainName }}
+      host: {{ .Values.domainName | quote }}
+      {{- end }}

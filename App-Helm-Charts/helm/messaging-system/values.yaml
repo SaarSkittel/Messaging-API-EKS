@@ -1,5 +1,5 @@
-# Default host name routed by the shared ALB.
-domainName: saarskittel.com
+# Optional host name routed by the shared ALB. Leave empty in test environments to match all hosts and use the ALB DNS name directly.
+domainName: ""
 # Default ingress class name created by Terraform for EKS Auto Mode.
 ingressClassName: alb
 # Default ALB annotations used by the app ingress resources.

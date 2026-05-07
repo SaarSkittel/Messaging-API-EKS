@@ -55,8 +55,22 @@ locals {
   # Use the caller-supplied access token secret ARN when present, otherwise fall back to the secret created by Terraform.
   access_token_secret_arn = var.existing_access_token_secret_arn != "" ? var.existing_access_token_secret_arn : aws_secretsmanager_secret.access_token[0].arn
 
-  # Select the appropriate subnet tag set for ALB placement based on the desired exposure scheme.
-  alb_subnet_match_tags = var.alb_scheme == "internal" ? { "kubernetes.io/role/internal-elb" = "1" } : { "kubernetes.io/role/elb" = "1" }
+  # Select the appropriate subnet tag selector list for ALB placement based on the desired exposure scheme.
+  alb_subnet_match_tags = var.alb_scheme == "internal" ? [
+    {
+      # Match the standard subnet tag used for internal load balancers.
+      key = "kubernetes.io/role/internal-elb"
+      # Accept the standard tag value applied by this stack.
+      values = ["1"]
+    }
+    ] : [
+    {
+      # Match the standard subnet tag used for internet-facing load balancers.
+      key = "kubernetes.io/role/elb"
+      # Accept the standard tag value applied by this stack.
+      values = ["1"]
+    }
+  ]
 
   # Apply a common tag set to every AWS resource to make the environment easier to browse and cost-track.
   tags = {

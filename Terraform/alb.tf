@@ -1,5 +1,7 @@
 # Create the EKS Auto Mode IngressClassParams object that describes how the shared ALB should behave.
 resource "kubernetes_manifest" "alb_ingress_class_params" {
+  # Create this resource only after the cluster exists and the caller enables in-cluster resources.
+  count = var.deploy_in_cluster_resources ? 1 : 0
   # Submit the manifest directly because IngressClassParams is a CRD owned by EKS Auto Mode.
   manifest = {
     # Use the API group required by EKS Auto Mode.
@@ -51,6 +53,8 @@ resource "kubernetes_manifest" "alb_ingress_class_params" {
 
 # Create the Kubernetes IngressClass that points normal ingress resources at the ALB configuration above.
 resource "kubernetes_manifest" "alb_ingress_class" {
+  # Create this resource only after the cluster exists and the caller enables in-cluster resources.
+  count = var.deploy_in_cluster_resources ? 1 : 0
   # Submit the manifest directly because this keeps the spec close to the AWS documentation examples.
   manifest = {
     # Use the stable Kubernetes networking API group.

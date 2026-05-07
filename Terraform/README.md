@@ -137,6 +137,7 @@ Optional but useful:
 
 - `domain_name`
 - `alb_scheme`
+- `deploy_in_cluster_resources`
 - `existing_access_token_secret_arn`
 - `auth_image`
 - `messaging_image`
@@ -150,9 +151,11 @@ Run from the `Terraform` directory:
 ```bash
 terraform init
 terraform plan \
+  -var="deploy_in_cluster_resources=false" \
   -var="db_username=postgres" \
   -var="existing_access_token_secret_arn=arn:aws:secretsmanager:us-east-1:123456789012:secret:my-shared-jwt"
 terraform apply \
+  -var="deploy_in_cluster_resources=false" \
   -var="db_username=postgres" \
   -var="existing_access_token_secret_arn=arn:aws:secretsmanager:us-east-1:123456789012:secret:my-shared-jwt"
 ```
@@ -186,25 +189,38 @@ aws secretsmanager describe-secret \
   --profile Saar
 ```
 
-5. Deploy the infrastructure and the application from the `Terraform` directory.
+5. Deploy the AWS infrastructure from the `Terraform` directory.
 
 ```bash
 terraform init
 terraform plan \
+  -var="deploy_in_cluster_resources=false" \
   -var="db_username=postgres" \
   -var="existing_access_token_secret_arn=YOUR_SECRET_ARN"
 terraform apply \
+  -var="deploy_in_cluster_resources=false" \
   -var="db_username=postgres" \
   -var="existing_access_token_secret_arn=YOUR_SECRET_ARN"
 ```
 
-6. Optional overrides you can pass during plan or apply:
+6. Deploy the in-cluster Kubernetes manifests and Helm release after EKS is active.
+
+```bash
+terraform apply \
+  -var="deploy_in_cluster_resources=true" \
+  -var="db_username=postgres" \
+  -var="existing_access_token_secret_arn=YOUR_SECRET_ARN"
+```
+
+7. Optional overrides you can pass during plan or apply:
 
 - `-var="aws_profile=Saar"`
 - `-var="domain_name=your-domain.com"`
 - `-var='certificate_arns=["arn:aws:acm:..."]'`
 
-7. Update your kubeconfig after the cluster exists.
+If you leave `domain_name` empty, the ingress matches all hosts and you can use the AWS-provided ALB DNS name directly for testing.
+
+8. Update your kubeconfig after the cluster exists.
 
 ```bash
 aws eks update-kubeconfig \
@@ -213,7 +229,7 @@ aws eks update-kubeconfig \
   --profile Saar
 ```
 
-8. Verify the deployment.
+9. Verify the deployment.
 
 ```bash
 kubectl get nodes
@@ -223,9 +239,11 @@ kubectl get secretproviderclass -A
 terraform output
 ```
 
-9. Point your DNS record to the ALB created for the ingress if you want external access on your chosen host name.
+10. For a throwaway or test environment, you can use the ALB DNS name shown in `kubectl get ingress -A` directly.
 
-10. If the first `terraform apply` creates the EKS cluster but the Kubernetes or Helm providers fail because the control plane is still settling, run the same `terraform apply` command a second time.
+11. Point your DNS record to the ALB created for the ingress only if you want external access on your own host name.
+
+12. If Terraform reports `cannot create REST client: no client config`, it means the EKS control plane is not available yet for Kubernetes and Helm resources. Apply once with `deploy_in_cluster_resources=false`, wait for EKS to finish creating, and then run a second apply with `deploy_in_cluster_resources=true`.
 
 ### Minimal Deploy
 
@@ -233,6 +251,11 @@ terraform output
 cd Terraform
 terraform init
 terraform apply \
+  -var="deploy_in_cluster_resources=false" \
+  -var="db_username=postgres" \
+  -var="existing_access_token_secret_arn=YOUR_SECRET_ARN"
+terraform apply \
+  -var="deploy_in_cluster_resources=true" \
   -var="db_username=postgres" \
   -var="existing_access_token_secret_arn=YOUR_SECRET_ARN"
 aws eks update-kubeconfig \

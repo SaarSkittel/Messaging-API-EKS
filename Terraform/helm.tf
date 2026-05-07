@@ -1,5 +1,7 @@
 # Install the application Helm chart after the infrastructure and Kubernetes entry points are ready.
 resource "helm_release" "messaging_system" {
+  # Install the chart only after the cluster exists and the caller enables in-cluster resources.
+  count = var.deploy_in_cluster_resources ? 1 : 0
   # Use the caller-supplied Helm release name.
   name = var.release_name
   # Point Helm at the local chart directory inside this repository.

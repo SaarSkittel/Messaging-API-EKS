@@ -2,8 +2,8 @@
 data "aws_iam_policy_document" "cluster_assume_role" {
   # Add a single statement granting the EKS service permission to assume the role.
   statement {
-    # Allow the standard role-assumption action used by AWS services.
-    actions = ["sts:AssumeRole"]
+    # Allow EKS Auto Mode to assume the role and attach the session tags it uses for downstream AWS operations.
+    actions = ["sts:AssumeRole", "sts:TagSession"]
 
     # Scope the trust relationship to the Amazon EKS service principal.
     principals {
