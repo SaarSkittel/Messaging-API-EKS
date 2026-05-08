@@ -2,7 +2,7 @@
 
 ## Architecture
 
-![Messaging API on Amazon EKS architecture](docs/images/messaging-api-eks-architecture.png)
+![Messaging API on Amazon EKS architecture](docs/images/eks-messaging.drawio.png)
 
 ## Introduction
 A fully scalable RESTful messaging api that runs on Docker written in Python using Django and Django Rest Framework with Celery for asynchronous tasking, Reddis message broker and Postgres for a DB. 
